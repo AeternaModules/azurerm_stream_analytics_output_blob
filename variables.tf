@@ -32,10 +32,10 @@ EOT
     storage_container_name    = string
     stream_analytics_job_name = string
     time_format               = string
-    authentication_mode       = optional(string, "ConnectionString")
+    authentication_mode       = optional(string) # Default: "ConnectionString"
     batch_max_wait_time       = optional(string)
     batch_min_rows            = optional(number)
-    blob_write_mode           = optional(string, "Append")
+    blob_write_mode           = optional(string) # Default: "Append"
     storage_account_key       = optional(string)
     serialization = object({
       encoding        = optional(string)
