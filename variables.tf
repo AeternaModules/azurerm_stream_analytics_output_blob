@@ -48,68 +48,110 @@ EOT
       type            = string
     })
   }))
-  # --- Unconfirmed validation candidates, derived from azurerm_stream_analytics_output_blob's provider source ---
-  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
-  # or a path that crosses a list-typed block (needs its own for_each wrapping).
-  # Review, translate into a real validation{} block above, and delete once confirmed.
-  # path: name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: stream_analytics_job_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: resource_group_name
-  #   condition: length(value) <= 90
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  # path: resource_group_name
-  #   condition: !endswith(value, ".")
-  #   message:   [from resourcegroups.ValidateName: must not end with "."]
-  #   source:    [from resourcegroups.ValidateName: must not end with "."]
-  # path: resource_group_name
-  #   condition: length(value) != 0
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  # path: resource_group_name
-  #   source:    [from resourcegroups.ValidateName] !matched
-  # path: date_format
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: storage_account_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: storage_container_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: time_format
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: serialization.type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: serialization.field_delimiter
-  #   condition: contains([" ", ",", "\t", "|", ";"], value)
-  #   message:   must be one of:  , ,, 	, |, ;
-  # path: serialization.encoding
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: serialization.format
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: authentication_mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: batch_max_wait_time
-  #   source:    [from validate.BatchMaxWaitTime] !ok
-  # path: batch_max_wait_time
-  #   condition: length(value) > 0
-  #   message:   [from validate.BatchMaxWaitTime: invalid when value == ""]
-  #   source:    [from validate.BatchMaxWaitTime: invalid when value == ""]
-  # path: batch_max_wait_time
-  #   source:    [from validate.BatchMaxWaitTime] !matched
-  # path: batch_min_rows
-  #   condition: value >= 0 && value <= 1000000
-  #   message:   must be between 0 and 1000000
-  # path: storage_account_key
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: blob_write_mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        length(v.name) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        length(v.stream_analytics_job_name) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        length(v.resource_group_name) <= 90
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) > 90]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        !endswith(v.resource_group_name, ".")
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: must not end with \".\"]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        length(v.resource_group_name) != 0
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) == 0]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        length(v.date_format) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        length(v.storage_account_name) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        length(v.storage_container_name) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        length(v.time_format) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        v.serialization.field_delimiter == null || (contains([" ", ",", "\t", "|", ";"], v.serialization.field_delimiter))
+      )
+    ])
+    error_message = "must be one of:  , ,, 	, |, ;"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        v.batch_max_wait_time == null || (length(v.batch_max_wait_time) > 0)
+      )
+    ])
+    error_message = "[from validate.BatchMaxWaitTime: invalid when value == \"\"]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        v.batch_min_rows == null || (v.batch_min_rows >= 0 && v.batch_min_rows <= 1000000)
+      )
+    ])
+    error_message = "must be between 0 and 1000000"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.stream_analytics_output_blobs : (
+        v.storage_account_key == null || (length(v.storage_account_key) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # Note: 8 additional provider-side validators are enforced at apply time but not mirrored as validation{} blocks here (bespoke or non-mechanically-translatable).
 }
 
