@@ -36,7 +36,7 @@ output "stream_analytics_output_blobs_resource_group_name" {
 }
 output "stream_analytics_output_blobs_serialization" {
   description = "Map of serialization values across all stream_analytics_output_blobs, keyed the same as var.stream_analytics_output_blobs"
-  value       = { for k, v in azurerm_stream_analytics_output_blob.stream_analytics_output_blobs : k => v.serialization if v.serialization != null && length(v.serialization) > 0 }
+  value       = { for k, v in azurerm_stream_analytics_output_blob.stream_analytics_output_blobs : k => one(v.serialization) if v.serialization != null && length(v.serialization) > 0 }
 }
 output "stream_analytics_output_blobs_storage_account_key" {
   description = "Map of storage_account_key values across all stream_analytics_output_blobs, keyed the same as var.stream_analytics_output_blobs"
